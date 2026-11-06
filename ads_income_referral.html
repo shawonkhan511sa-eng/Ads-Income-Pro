@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
@@ -329,6 +330,7 @@
         </header>
 
         <main class="content">
+            <!-- 1. Home Page -->
             <section id="home-page" class="page active">
                 <div class="card balance-card">
                     <h2 class="card-header">
@@ -383,6 +385,7 @@
                 </div>
             </section>
 
+            <!-- 2. Earn Page -->
             <section id="earn-page" class="page">
                 <div class="card">
                     <h2 class="card-header">
@@ -391,7 +394,7 @@
                     </h2>
                     <div style="text-align: left; margin-bottom: 10px;">
                         <div style="font-size: 14px; font-weight: 600;">Today's Progress:</div>
-                        <div style="font-size: 12px; color: var(--light-text-color);" id="ad-progress-text">Completed: 0 / 50</div>
+                        <div style="font-size: 12px; color: var(--light-text-color);" id="ad-progress-text">Completed: 0 / 100</div>
                     </div>
                     <div class="progress-bar-container">
                         <div class="progress-bar" id="ad-progress-bar"></div>
@@ -403,6 +406,7 @@
                 </div>
             </section>
             
+            <!-- 3. Withdraw Page -->
             <section id="withdraw-page" class="page">
                 <div class="card">
                     <h2 class="card-header">
@@ -442,6 +446,7 @@
                 </div>
             </section>
 
+            <!-- 4. Profile Page -->
             <section id="profile-page" class="page">
                 <div class="card" style="padding: 30px;">
                     <div class="profile-pic-container">
@@ -472,6 +477,7 @@
             </section>
         </main>
 
+        <!-- Footer Navigation -->
         <nav class="footer-nav">
             <div class="nav-item active" data-page="home-page">
                 <span class="material-icons">home</span>
@@ -494,12 +500,10 @@
 
     <!-- 
         =====================================================================
-        ====== অ্যাড নেটওয়ার্কের SDK বসানোর জায়গা (প্রথম অংশ) ======
+        ====== অ্যাড নেটওয়ার্কের SDK (Zone: 12203768, SDK: show_12203768) ======
         =====================================================================
-        এখানে আপনার পছন্দের অ্যাড নেটওয়ার্কের দেওয়া <script> ট্যাগটি বসাতে হবে।
-        নিচের লাইনটি একটি উদাহরণ মাত্র। আপনি এটিকে পরিবর্তন করে আপনার নিজের কোড বসাবেন।
     -->
-    <script src='//libtl.com/sdk.js' data-zone='9702412' data-sdk='show_9702412'></script>
+    <script src='//libtl.com/sdk.js' data-zone='12203768' data-sdk='show_12203768'></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -508,7 +512,7 @@
             tg.expand();
             const userData = tg.initDataUnsafe.user;
 
-            // Referral link: each Telegram user gets a unique start parameter.
+            // Referral link
             const BOT_USERNAME = 'ads_income_1_bot';
             const referralInput = document.getElementById('referral-link');
             const copyReferralBtn = document.getElementById('copy-referral-btn');
@@ -560,6 +564,7 @@
                     window.open(shareUrl, '_blank');
                 }
             });
+
             const defaultProfilePic40 = 'https://via.placeholder.com/40';
             const defaultProfilePic80 = 'https://via.placeholder.com/80';
 
@@ -570,7 +575,7 @@
             const withdrawBtn = document.getElementById('withdraw-btn');
             const withdrawForm = document.getElementById('withdraw-form');
 
-            const DAILY_ADS_LIMIT = 50;
+            const DAILY_ADS_LIMIT = 100;
             const AD_REWARD = 0.02; // BDT per ad
             const MIN_WITHDRAW_AMOUNT = 100;
 
@@ -581,9 +586,9 @@
             }
 
             function updateUI() {
-                const earnings = parseFloat(localStorage.getItem('earnings'));
-                const adsWatched = parseInt(localStorage.getItem('adsWatched'));
-                const referrals = parseInt(localStorage.getItem('totalReferrals'));
+                const earnings = parseFloat(localStorage.getItem('earnings') || '0');
+                const adsWatched = parseInt(localStorage.getItem('adsWatched') || '0');
+                const referrals = parseInt(localStorage.getItem('totalReferrals') || '0');
 
                 const formattedEarnings = earnings.toFixed(2);
 
@@ -593,11 +598,7 @@
                     document.getElementById('profile-user-name').textContent = fullName || 'User';
                     document.getElementById('profile-user-username').textContent = userData.username ? `@${userData.username}` : 'No username';
                     
-                    // ======================================================================
-                    // ====== প্রোফাইল ছবি দেখানোর কোড (CORS সমস্যার সমাধানসহ) ======
-                    // ======================================================================
                     if (userData.photo_url) {
-                        // টেলিগ্রামের CORS পলিসি এড়ানোর জন্য একটি প্রক্সি ব্যবহার করা হয়েছে।
                         const proxyUrl = 'https://api.allorigins.win/raw?url=';
                         const proxiedPhotoUrl = `${proxyUrl}${encodeURIComponent(userData.photo_url)}`;
                         
@@ -654,51 +655,59 @@
             startEarningBtn.addEventListener('click', () => showPage('earn-page'));
             withdrawBtn.addEventListener('click', () => showPage('withdraw-page'));
             
+            // Watch Ad click handler with libtl SDK: show_12203768('pop')
             watchAdBtn.addEventListener('click', () => {
-                if (parseInt(localStorage.getItem('adsWatched')) >= DAILY_ADS_LIMIT) {
+                if (parseInt(localStorage.getItem('adsWatched') || '0') >= DAILY_ADS_LIMIT) {
                     tg.showAlert('আপনার দৈনিক বিজ্ঞাপনের সীমা পৌঁছে গেছে।');
                     return;
                 }
 
                 watchAdBtn.disabled = true;
 
-                // --- অ্যাড নেটওয়ার্কের কোড কল করার জায়গা (দ্বিতীয় অংশ) ---
-                // ======================================================================
-                // এখানে আপনার অ্যাড নেটওয়ার্কের দেওয়া ফাংশনটি কল করতে হবে।
-                // নিচের 'show_9702412()' লাইনটি একটি উদাহরণ।
-                // ======================================================================
-                if (typeof show_9702412 === 'function') {
-                    show_9702412().then(() => {
-                        let earnings = parseFloat(localStorage.getItem('earnings')) + AD_REWARD;
-                        let currentAdsWatched = parseInt(localStorage.getItem('adsWatched')) + 1;
+                if (typeof show_12203768 === 'function') {
+                    show_12203768('pop').then(() => {
+                        let earnings = parseFloat(localStorage.getItem('earnings') || '0') + AD_REWARD;
+                        let currentAdsWatched = parseInt(localStorage.getItem('adsWatched') || '0') + 1;
                         
                         localStorage.setItem('earnings', earnings.toString());
                         localStorage.setItem('adsWatched', currentAdsWatched.toString());
                         
-                        tg.showAlert(`বিজ্ঞাপনটি দেখার জন্য আপনি BDT ${AD_REWARD.toFixed(2)} পেয়েছেন!`);
-                    }).catch(() => {
-                        tg.showAlert('বিজ্ঞাপনটি দেখাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+                        if (window.Telegram && Telegram.WebApp && Telegram.WebApp.showAlert) {
+                            tg.showAlert(`বিজ্ঞাপনটি দেখার জন্য আপনি BDT ${AD_REWARD.toFixed(2)} পেয়েছেন!`);
+                        } else {
+                            alert(`বিজ্ঞাপনটি দেখার জন্য আপনি BDT ${AD_REWARD.toFixed(2)} পেয়েছেন!`);
+                        }
+                    }).catch(e => {
+                        console.error('Ad display error:', e);
+                        if (window.Telegram && Telegram.WebApp && Telegram.WebApp.showAlert) {
+                            tg.showAlert('বিজ্ঞাপনটি দেখাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+                        } else {
+                            alert('বিজ্ঞাপনটি দেখাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+                        }
                     }).finally(() => {
+                        watchAdBtn.disabled = false;
                         updateUI();
                     });
                 } else {
-                    // Fallback for testing in browser without Telegram
-                    let earnings = parseFloat(localStorage.getItem('earnings')) + AD_REWARD;
-                    let currentAdsWatched = parseInt(localStorage.getItem('adsWatched')) + 1;
+                    // Test Fallback
+                    let earnings = parseFloat(localStorage.getItem('earnings') || '0') + AD_REWARD;
+                    let currentAdsWatched = parseInt(localStorage.getItem('adsWatched') || '0') + 1;
                     localStorage.setItem('earnings', earnings.toString());
                     localStorage.setItem('adsWatched', currentAdsWatched.toString());
-                    alert(`(Test Mode) You earned BDT ${AD_REWARD.toFixed(2)}!`);
+                    alert(`(Test Mode) You earned BDT ${AD_REWARD.toFixed(2)}! (show_12203768 SDK active)`);
+                    watchAdBtn.disabled = false;
                     updateUI();
                 }
             });
 
+            // Withdraw Form Submit
             withdrawForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const amount = parseFloat(document.getElementById('withdraw-amount').value);
                 
                 tg.showConfirm(`আপনি কি আপনার উইথড্র অনুরোধ জমা দিতে চান?`, (confirmed) => {
                     if (confirmed) {
-                        let newEarnings = parseFloat(localStorage.getItem('earnings')) - amount;
+                        let newEarnings = parseFloat(localStorage.getItem('earnings') || '0') - amount;
                         localStorage.setItem('earnings', newEarnings.toString());
                         
                         tg.sendData(JSON.stringify({ 
